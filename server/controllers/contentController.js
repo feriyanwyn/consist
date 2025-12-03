@@ -3,7 +3,6 @@ const ContentAI = require('../models/content_ai');
 const deepseek = require('../utils/deepseekClient');
 
 module.exports = {
-    // Get all contents owned by logged-in user
     getOwnContents: async (req, res) => {
         try {
             const user_id = req.user.id;
@@ -14,7 +13,6 @@ module.exports = {
         }
     },
 
-    // Get a single content owned by current user
     getOne: async (req, res) => {
         try {
             const user_id = req.user.id;
@@ -28,7 +26,6 @@ module.exports = {
         }
     },
 
-    // Create content + AI summary/reference
     create: async (req, res) => {
         try {
             const user_id = req.user.id;
@@ -43,7 +40,6 @@ module.exports = {
                 status
             });
 
-            // === Call DeepSeek AI ===
             const ai_text = await deepseek.generateSummary(
                 `Title: ${title}\nDescription: ${description}`
             );
@@ -67,7 +63,6 @@ module.exports = {
         }
     },
 
-    // Update content + regenerate AI summary
     update: async (req, res) => {
         try {
             const user_id = req.user.id;
@@ -78,15 +73,11 @@ module.exports = {
 
             if (!content) return res.status(404).json({ message: 'Content not found or not yours' });
 
-            // Update content
             await content.update(req.body);
-
-            // === Call DeepSeek AI ===
             const ai_text = await deepseek.generateSummary(
                 `Updated Content:\nTitle: ${content.title}\nDescription: ${content.description}`
             );
 
-            // Save AI result as new history entry
             await ContentAI.create({
                 user_id,
                 content_id: content.id,
@@ -105,7 +96,6 @@ module.exports = {
         }
     },
 
-    // Delete content (auto-delete AI logs via cascade)
     delete: async (req, res) => {
         try {
             const user_id = req.user.id;
