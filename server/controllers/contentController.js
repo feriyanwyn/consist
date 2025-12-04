@@ -61,9 +61,28 @@ module.exports = {
                 status
             });
 
-            const ai_text = await deepseek.generateSummary(
-                `Title: ${title}\nDescription: ${description}`
-            );
+            const finalPrompt = `
+            You are an AI assistant specialized in content strategy and creative planning.
+            
+            Given the following content information:
+            
+            Title: ${title}
+            Description: ${description}
+            
+            Your tasks:
+            1. Generate a clear and concise summary of the content in 2–4 sentences.
+            2. Provide suggestions or improvements related to the content's structure, clarity, or creativity.
+            3. Provide a list of 3 potential content ideas or angles relevant to the topic.
+            4. The tone must be professional and helpful.
+            5. Respond ONLY in Bahasa Indonesia.
+            6. Format your response in clean markdown with this structure:
+               ## Summary
+               ## Suggestions
+               ## Ideas
+            `;
+
+            const ai_text = await deepseek.generateSummary(finalPrompt);
+
 
             await ContentAI.create({
                 user_id,
@@ -96,9 +115,24 @@ module.exports = {
             if (!content) return res.status(404).json({ message: 'Content not found or not yours' });
 
             await content.update(req.body);
-            const ai_text = await deepseek.generateSummary(
-                `Updated Content:\nTitle: ${content.title}\nDescription: ${content.description}`
-            );
+            const ai_text = await deepseek.generateSummary(`
+            You are an AI assistant specialized in content strategy and creative planning.
+
+            Updated Content:
+            Title: ${content.title}
+            Description: ${content.description}
+
+            Your tasks:
+            1. Generate a clear and concise summary of the updated content in 2–4 sentences.
+            2. Provide suggestions or improvements based on the new version of the content.
+            3. Provide 3 new potential content ideas or angles relevant to this updated topic.
+            4. The tone must be professional and helpful.
+            5. Respond ONLY in Bahasa Indonesia.
+            6. Format your response in clean markdown with this structure:
+            ## Summary
+            ## Suggestions
+            ## Ideas
+            `);
 
             await ContentAI.create({
                 user_id,

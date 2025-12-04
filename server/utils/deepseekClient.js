@@ -6,18 +6,18 @@ const client = new OpenAI({
 });
 
 module.exports = {
-    generateSummary: async (text) => {
+    generateSummary: async (prompt) => {
         try {
             const completion = await client.chat.completions.create({
                 model: "deepseek-chat",
                 messages: [
                     {
                         role: "system",
-                        content: "You are an AI that generates short, clear summaries."
+                        content: "You are an advanced AI content generator."
                     },
                     {
                         role: "user",
-                        content: `Summarize this content:\n${text}`
+                        content: prompt
                     }
                 ]
             });
@@ -26,7 +26,7 @@ module.exports = {
 
         } catch (err) {
             console.error("DeepSeek API error:", err);
-            return "(AI summary unavailable)";
+            return "(AI response unavailable)";
         }
     }
 };
